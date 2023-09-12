@@ -1,0 +1,16 @@
+
+    <property>
+        <name>hadoop.http.filter.initializers</name>
+        <value>org.apache.hadoop.security.AuthenticationFilterInitializer</value>
+    </property>
+    
+
+
+    <property>
+        <name>hadoop.http.authentication.type</name>
+        <value>com.yhsoft.hadoop.security.BasicAuthenticationHandler</value>
+    </property>
+    <property>
+        <name>hadoop.http.authentication.basic.credential</name>
+        <value>username : password</value>
+    </property>

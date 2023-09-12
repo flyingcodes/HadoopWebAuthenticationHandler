@@ -1,6 +1,6 @@
-# 自定义AuthenticationHandler使用方法:  
-#### 1.将xxx.jar放到lib目录，修改hadoop-env.sh  
-添加export HADOOP_CLASSPATH="/opt/hadoop-3.0.0/lib/xxx.jar"  
+# 自定义AuthenticationHandler使用方法，每个节点都要配置:  
+#### 1.将xxx.jar放到{haddop-dir}/share/hadoop/common/lib目录，或者其他目录，然后修改hadoop-env.sh  
+添加export HADOOP_CLASSPATH="/other-dir/lib/xxx.jar"  
 #### 2.修改core-site.xml
 ```
     <!-- 配置HDFS网页登录认证 -->
@@ -45,4 +45,4 @@
     -->
 
 ```
-#### 3.在数据库中创建用户表  
+
