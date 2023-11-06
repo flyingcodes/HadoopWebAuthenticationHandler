@@ -1,0 +1,38 @@
+#!/bin/bash
+#1 获取输入参数个数，如果没有参数，直接退出
+pcount=$#
+if [ $pcount -lt 1 ]
+then
+    echo Not Enough Arguement!
+    exit;
+fi
+
+#2. 遍历集群所有机器
+# 也可以采用：
+# for host in hadoop{102..104};
+for host in yh20 yh30 yh40 yh50
+do
+    echo ====================    $host    ====================
+    #3. 遍历所有目录，挨个发送
+    for file in $@
+    do
+        #4 判断文件是否存在
+        if [ -e $file ]
+        then
+            #5. 获取父目录
+            pdir=$(cd -P $(dirname $file); pwd)
+
+            #6. 获取当前文件的名称
+            fname=$(basename $file)
+            echo "---> $pdir/$fname"
+            
+            #7. 通过ssh执行命令：在$host主机上递归创建文件夹（如果存在该文件夹）
+            ssh $host "mkdir -p $pdir"
+            
+			#8. 远程同步文件至$host主机的$USER用户的$pdir文件夹下
+            rsync -av $pdir/$fname $USER@$host:$pdir
+        else
+            echo $file does not exists!
+        fi
+    done
+done
