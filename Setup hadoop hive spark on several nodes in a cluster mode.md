@@ -269,6 +269,19 @@
                 <name>yarn.nodemanager.env-whitelist</name>
                 <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_HOME,PATH,LANG,TZ,HADOOP_MAPRED_HOME</value>
             </property>
+            <!-- 如果下面 3 项不配置，那么在 YARN 页面只能看到主节点一个节点 -->
+            <property>
+                <name>yarn.resourcemanager.address</name>
+                <value>yh10:8032</value>
+            </property>
+            <property>
+                <name>yarn.resourcemanager.resource-tracker.address</name>
+                <value>yh10:8031</value>
+            </property>
+            <property>
+                <name>yarn.resourcemanager.scheduler.address</name>
+                <value>yh10:8030</value>
+            </property>
         </configuration>
     ```
 13. 启动 YARN 的 ResourceManager 和 NodeManager 进程：
@@ -282,7 +295,21 @@
     ```sh
         [hadoop@localhost dis]$ $HADOOP_HOME/sbin/stop-yarn.sh
     ```
-
+12. 调整 YARN 可用资源，根据节点物理内存和CPU核心数，增加下列配置：
+    ```xml
+        [hadoop@localhost dis]$ vi $HADOOP_HOME/etc/hadoop/yarn-site.xml
+        <configuration>
+            <property>
+                <name>yarn.nodemanager.resource.memory-mb</name>
+                <value>32768</value>
+            </property>
+            <property>
+                <name>yarn.nodemanager.resource.cpu-vcores</name>
+                <value>16</value>
+            </property>
+        </configuration>
+    ```
+    然后重新启动 YARN 即可生效。
 ## 四、安装 Derby
 1. Hive 默认带有进程 Derby 功能作为元数据存储库，但是一般都是作为测试目的的 HIVE 独立使用，更加无法和其他开源组件（如 Spark）集成使用。因此，需要独立安装数据库作为 HIVE 的元数据存储库，这里选择轻量级的 Derby。安装 Derby 参考 https://cwiki.apache.org/confluence/display/Hive/HiveDerbyServerMode 。先解压 Derby 安装包。
     ```sh
@@ -542,6 +569,15 @@
         0: jdbc:hive2://localhost:10000>
     ```
     如果出现 `Could not open connection to the HS2 server. Please check the server URI and if the URI is correct, then ask the administrator to check the server status. Error: Could not open client transport with JDBC Uri: jdbc:hive2://localhost:10000: java.net.ConnectException: 拒绝连接 (Connection refused) (state=08S01,code=0)` 的错误信息，说明 Thrift Server 服务尚未启动完成，等待一会儿之后重试即可。
+4. 调整 Spark 内存和执行器等配置。
+    ```sh
+        [hadoop@localhost dis]$ vi $SPARK_HOME/conf/spark-env.sh
+        export SPARK_EXECUTOR_INSTANCES=16
+        export SPARK_EXECUTOR_CORES=1
+        export SPARK_EXECUTOR_MEMORY=4G
+        export SPARK_DRIVER_MEMORY=2G
+    ```
+    修改完之后重启 Spark 即可生效。
 
 ## 七、启动集群
 1. 启动 HDFS，也就是启动 NameNode 和 DataNode 进程。
