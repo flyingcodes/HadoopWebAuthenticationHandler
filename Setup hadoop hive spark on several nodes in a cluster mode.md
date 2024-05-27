@@ -269,18 +269,10 @@
                 <name>yarn.nodemanager.env-whitelist</name>
                 <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_HOME,PATH,LANG,TZ,HADOOP_MAPRED_HOME</value>
             </property>
-            <!-- 如果下面 3 项不配置，那么在 YARN 页面只能看到主节点一个节点 -->
+            <!-- 如果下面项不配置，那么在 YARN 页面只能看到主节点一个节点 -->
             <property>
-                <name>yarn.resourcemanager.address</name>
-                <value>yh10:8032</value>
-            </property>
-            <property>
-                <name>yarn.resourcemanager.resource-tracker.address</name>
-                <value>yh10:8031</value>
-            </property>
-            <property>
-                <name>yarn.resourcemanager.scheduler.address</name>
-                <value>yh10:8030</value>
+                <name>yarn.resourcemanager.hostname</name>
+                <value>yh10</value>
             </property>
         </configuration>
     ```

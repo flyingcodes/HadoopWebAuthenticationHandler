@@ -1,0 +1,69 @@
+  <!-- 限制IP和端口 -->
+  <rule family="ipv4">
+    <source address="192.168.3.231" />
+    <port port="9870" protocol="tcp"/>
+    <accept />
+  </rule>
+
+  <!-- 限制IP，但不限制端口 -->
+  <rule family="ipv4">
+    <source address="192.168.3.231" />
+    <accept />
+  </rule>
+
+<!-- 192.168.3.0/23  其中 23 要和 ip addr 显示的一样，否则部分IP可以访问、部分又不能访问 -->
+
+  <!-- 限制IP段和端口 -->
+  <rule family="ipv4">
+    <source address="192.168.3.0/23" />
+    <port port="9870" protocol="tcp"/>
+    <accept />
+  </rule>
+
+  <!-- 限制IP段，但不限制端口 -->
+  <rule family="ipv4">
+    <source address="192.168.3.0/23" />
+    <accept />
+  </rule>
+
+<!-- 
+    将 IP 地址加入到 trusted 区域，可以不受 public 区域限制，可以连接所有端口，
+    也就是说，不在 trusted 区域的 IP 都受 public 区域限制，
+    一般配置服务器集群的各个节点的 IP，运维人员的工作站 IP 不应该加入到 trusted 区域，
+    而应该加入到 public 区域并限制端口（比如 22 端口）
+    vi /etc/firewalld/zones/trusted.xml
+-->
+
+<?xml version="1.0" encoding="utf-8"?>
+<zone target="ACCEPT">
+  <short>Trusted</short>
+  <description>All network connections are accepted.</description>
+  <source address="192.168.2.73" />
+  <source address="192.168.3.231" />
+  <!-- <port port="9870" protocol="tcp"/> --> <!-- 没效果，不加也是所有端口可以访问，加了也是所有端口都能访问 -->
+</zone>
+
+<rule [family="ipv4|ipv6"]>
+  [ <source address="address[/mask]" [invert="True"]/> ]
+  [ <destination address="address[/mask]" [invert="True"]/> ]
+  [
+    <service name="string"/> |
+    <port port="portid[-portid]" protocol="tcp|udp"/> |
+    <protocol value="protocol"/> |
+    <icmp-block name="icmptype"/> |
+    <masquerade/> |
+    <forward-port port="portid[-portid]" protocol="tcp|udp" [to-port="portid[-portid]"] [to-addr="address"]/> |
+    <source-port port="portid[-portid]" protocol="tcp|udp"/> |
+  ]
+  [ 
+    <log [prefix="prefixtext"] [level="emerg|alert|crit|err|warn|notice|info|debug"]/> [<limit value="rate/duration"/>] </log> |
+    <nflog [prefix="prefixtext"] [group="group id"] [queue-size="threshold"]/> [<limit value="rate/duration"/>] </nflog>
+  ]
+  [ <audit> [<limit value="rate/duration"/>] </audit> ]
+  [
+    <accept> [<limit value="rate/duration"/>] </accept> |
+    <reject [type="rejecttype"]> [<limit value="rate/duration"/>] </reject> |
+    <drop> [<limit value="rate/duration"/>] </drop> |
+    <mark set="mark[/mask]"> [<limit value="rate/duration"/>] </mark>
+  ]
+</rule>
